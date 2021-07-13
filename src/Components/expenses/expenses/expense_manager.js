@@ -5,6 +5,7 @@
 import './expense.css';
 import {useState} from 'react';
 import Expense from './expense';
+import AddExpense from './add_expense';
 
 const ExpenseManager = props =>{
     const [expenseObj, createExpense] = useState({
@@ -34,9 +35,35 @@ const ExpenseManager = props =>{
             expense={element['expense']}></Expense>
         }
     ));
+
+    /** Methods to handle various operation */
+    const setExpenseObjectHandler = event =>{
+        if(event.target.id === ""){
+            createExpense(prvState =>{
+                return {...prvState,"expense_date":event.target.value};
+            })
+        }
+        else if(event.target.id === ""){
+            createExpense(prvState =>{
+                return {...prvState,"expense_type":event.target.value};
+            })
+        }
+        else if(event.target.id === ""){
+            createExpense( prvState =>{
+                return {...prvState,"expense":event.target.value};
+            }) 
+        }
+    }
+    const addExpenseHandler = event =>{
+        addExpenseObj(prvState =>{
+            return [...prvState,expenseObj];
+        });
+        // if selected filter matches expense year then re render the expense on screen.
+    }
    
     return (
         <div className="container">
+            <AddExpense expense_obj = {expenseObj} object_creater = {setExpenseObjectHandler} add_handler={addExpenseHandler}></AddExpense>
             <div>{expenseComponentArray}</div>
         </div>
     )
