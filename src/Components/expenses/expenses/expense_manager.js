@@ -28,15 +28,20 @@ const ExpenseManager = props =>{
                                             ]);
 
     
-    const [expenseComponentArray, addExpenseComponent] = useState(expenseObjArray.filter(e => e['expense_date'].getFullYear() == new Date().getFullYear()).map(
-        element =>{
-            console.log(element);
-            return <Expense expense_date = {element['expense_date']} expense_type = {element['expense_type']} 
-            expense={element['expense']}></Expense>
-        }
-    ));
+    const [expenseComponentArray, addExpenseComponent] = useState(filteredComponentArray());
 
     /** Methods to handle various operation */
+
+    function filteredComponentArray(){ 
+        return expenseObjArray.filter(
+        e => {
+            let date = new Date(e['expense_date']);    
+            return date.getFullYear() === new Date().getFullYear()
+        }).map(element =>{
+            return <Expense expense_date = {element['expense_date']} expense_type = {element['expense_type']} 
+            expense={element['expense']}></Expense>
+        })
+    }
     const setExpenseObjectHandler = event =>{
         if(event.target.id === "e_date"){
             createExpense(prvState =>{
@@ -50,25 +55,34 @@ const ExpenseManager = props =>{
         }
         else if(event.target.id === "exp"){
             createExpense( prvState =>{
+                console.log(prvState);
                 return {...prvState,"expense":event.target.value};
             }) 
         }
     }
-    const addExpenseHandler = event =>{
-        console.log(expenseObj);
-        addExpenseObj(prvState =>{
-            return [...prvState,expenseObj];
+
+    const addToExpenseObjArray = event =>{
+        return addExpenseObj(prvState =>{
+            let x = [...prvState,expenseObj];
+            console.log(x);
+            return x;
         });
-        // if selected filter matches expense year then re render the expense on screen.
-        addExpenseComponent(prvState =>{
-            expenseObjArray.map(element =>{
-                console.log(element);
-                return <Expense expense_date = {element['expense_date']} expense_type = {element['expense_type']} 
-                expense={element['expense']}></Expense>
-            })
-        })
     }
-   
+
+    const addToExpenseComponentArray = event => {
+        console.log(expenseObjArray);
+        let array = filteredComponentArray();
+        console.log("Helo")
+        console.log(array);
+        return addExpenseComponent(array);
+    }
+    
+    const addExpenseHandler = event =>{
+       addToExpenseObjArray();
+       console.log(expenseObjArray);
+       addToExpenseComponentArray(); 
+    }
+    console.log(expenseObjArray);
     return (
         <div className="container p-1 m-2 mx-auto">
             <AddExpense expense_obj = {expenseObj} object_creater = {setExpenseObjectHandler} add_handler={addExpenseHandler}></AddExpense>
