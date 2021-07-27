@@ -55,7 +55,7 @@ const ExpenseManager = props =>{
         }
     }
     const addExpenseHandler = event =>{
-        console.log(expenseObjArray);
+        console.log(expenseObj);
         addExpenseObj(prvState =>{
             return [...prvState,expenseObj];
         });
