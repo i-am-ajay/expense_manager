@@ -6,7 +6,10 @@ import './expense.css';
 import {useState} from 'react';
 import Expense from './expense';
 import AddExpense from './add_expense';
+import Chart from '../chart/chart';
+import ChartBar from '../chart/chart_bar'
 
+let componentChanged = false;
 const ExpenseManager = props =>{
     const [expenseObj, createExpense] = useState({
         "expense_date" : new Date().toISOString().split("T")[0],
@@ -42,6 +45,14 @@ const ExpenseManager = props =>{
             expense={element['expense']}></Expense>
         })
     }
+    function addElementToComponentList(comp){
+        let status = false;
+        let date = new Date(comp.expense_date);
+        if(date.getFullYear() == new Date().getFullYear()){
+            status = true;
+        }
+        return status;
+    }
     const setExpenseObjectHandler = event =>{
         if(event.target.id === "e_date"){
             createExpense(prvState =>{
@@ -64,28 +75,33 @@ const ExpenseManager = props =>{
     const addToExpenseObjArray = event =>{
         return addExpenseObj(prvState =>{
             let x = [...prvState,expenseObj];
-            console.log(x);
             return x;
         });
     }
 
-    const addToExpenseComponentArray = event => {
-        console.log(expenseObjArray);
-        let array = filteredComponentArray();
-        console.log("Helo")
-        console.log(array);
-        return addExpenseComponent(array);
+    const addToExpenseComponentArray = () => {
+        if (addElementToComponentList(expenseObj)){
+            let comp = <Expense expense_date = {expenseObj['expense_date']} expense_type={expenseObj['expense_type']}
+            expense={expenseObj['expense']}></Expense>;
+            return addExpenseComponent(prvState =>{
+                return [...prvState,comp];
+            })
+        }
     }
     
     const addExpenseHandler = event =>{
        addToExpenseObjArray();
-       console.log(expenseObjArray);
-       addToExpenseComponentArray(); 
+       addToExpenseComponentArray();
+       createExpense({
+           expense_date: "", expense_type: "", expense: ""
+       });
     }
-    console.log(expenseObjArray);
     return (
         <div className="container p-1 m-2 mx-auto">
             <AddExpense expense_obj = {expenseObj} object_creater = {setExpenseObjectHandler} add_handler={addExpenseHandler}></AddExpense>
+            <Chart>
+                <ChartBar />
+            </Chart>
             <div>{expenseComponentArray}</div>
         </div>
     )
